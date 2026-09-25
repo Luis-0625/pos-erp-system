@@ -1,5 +1,19 @@
 import { Request } from 'express';
 
+// Interfaz para el usuario
+export interface IUser {
+  id: number;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  roleId: number;
+  isActive: boolean;
+  lastLogin: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Tipos para autenticación
 export interface AuthenticatedRequest extends Request {
   user?: {

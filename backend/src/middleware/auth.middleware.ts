@@ -2,11 +2,12 @@ import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest } from '../types';
 import { sendUnauthorized, sendForbidden } from '../utils/response.util';
+import tokenService from '../services/token.service';
 
 /**
- * Middleware para verificar el token JWT
+ * Middleware para verificar el token JWT (usando tokenService)
  */
-export const verifyToken = (
+export const authenticate = (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -14,38 +15,42 @@ export const verifyToken = (
   try {
     // Obtener token del header
     const authHeader = req.headers.authorization;
+    const token = tokenService.extractTokenFromHeader(authHeader);
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!token) {
       sendUnauthorized(res, 'Token no proporcionado');
       return;
     }
 
-    const token = authHeader.substring(7); // Remover 'Bearer '
-
-    // Verificar token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
+    // Verificar token usando el servicio
+    const decoded = tokenService.verifyAccessToken(token);
 
     // Agregar información del usuario a la request
     req.user = {
-      id: decoded.id,
+      id: decoded.userId,
       email: decoded.email,
-      role: decoded.role,
-      permissions: decoded.permissions || [],
+      role: '', // Se cargará desde la BD si es necesario
+      permissions: [], // Se cargarán desde la BD si es necesario
     };
 
     next();
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
+  } catch (error: any) {
+    if (error.message === 'TOKEN_EXPIRED') {
       sendUnauthorized(res, 'Token expirado');
       return;
     }
-    if (error instanceof jwt.JsonWebTokenError) {
+    if (error.message === 'INVALID_TOKEN') {
       sendUnauthorized(res, 'Token inválido');
       return;
     }
     sendUnauthorized(res, 'Error al verificar token');
   }
 };
+
+/**
+ * Middleware para verificar el token JWT (legacy, mantener compatibilidad)
+ */
+export const verifyToken = authenticate;
 
 /**
  * Middleware para verificar roles

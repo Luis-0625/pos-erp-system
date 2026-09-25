@@ -11,10 +11,13 @@ dotenv.config();
 // Importar configuración de base de datos
 import { sequelize } from './config/database';
 
-// Importar rutas (se crearán después)
-// import authRoutes from './routes/auth.routes';
+// Importar rutas
+import authRoutes from './routes/auth.routes';
+import productRoutes from './routes/product.routes';
+import categoryRoutes from './routes/category.routes';
+import clientRoutes from './routes/client.routes';
+import supplierRoutes from './routes/supplier.routes';
 // import userRoutes from './routes/user.routes';
-// import productRoutes from './routes/product.routes';
 // import saleRoutes from './routes/sale.routes';
 
 const app: Application = express();
@@ -82,9 +85,12 @@ app.get(`/api/${API_VERSION}`, (req: Request, res: Response) => {
 });
 
 // Aquí irán las rutas principales
-// app.use(`/api/${API_VERSION}/auth`, authRoutes);
+app.use(`/api/${API_VERSION}/auth`, authRoutes);
+app.use(`/api/${API_VERSION}/products`, productRoutes);
+app.use(`/api/${API_VERSION}/categories`, categoryRoutes);
+app.use(`/api/${API_VERSION}/clients`, clientRoutes);
+app.use(`/api/${API_VERSION}/suppliers`, supplierRoutes);
 // app.use(`/api/${API_VERSION}/users`, userRoutes);
-// app.use(`/api/${API_VERSION}/products`, productRoutes);
 // app.use(`/api/${API_VERSION}/sales`, saleRoutes);
 
 // Manejo de errores 404
