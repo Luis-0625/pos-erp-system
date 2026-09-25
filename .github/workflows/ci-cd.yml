@@ -1,0 +1,108 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # Test Backend
+  test-backend:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: pos_erp_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+      
+      - name: Run Backend Linter
+        working-directory: ./backend
+        run: npm run lint
+      
+      - name: Run Backend Tests
+        working-directory: ./backend
+        run: npm test
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: pos_erp_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          JWT_SECRET: test_secret
+      
+      - name: Build Backend
+        working-directory: ./backend
+        run: npm run build
+
+  # Test Frontend
+  test-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+      
+      - name: Run Frontend Linter
+        working-directory: ./frontend
+        run: npm run lint
+      
+      - name: Type Check
+        working-directory: ./frontend
+        run: npm run type-check
+      
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+  # Deploy to Production (solo en main)
+  deploy:
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy Notification
+        run: echo "Desplegando a producción..."
+      
+      # Aquí se agregarían los pasos reales de despliegue
+      # Por ejemplo, deploy a Heroku, AWS, DigitalOcean, etc.
