@@ -20,8 +20,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path mapping */
-    "baseUrl": ".",
+    /* Silenciar advertencia temporalmente */
+    "ignoreDeprecations": "6.0",
+
+    /* Path mapping (si usas Vite, los aliases se configuran principalmente en vite.config.ts) */
     "paths": {
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
