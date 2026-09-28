@@ -17,8 +17,12 @@ import productRoutes from './routes/product.routes';
 import categoryRoutes from './routes/category.routes';
 import clientRoutes from './routes/client.routes';
 import supplierRoutes from './routes/supplier.routes';
+import saleRoutes from './routes/sale.routes';
+import purchaseRoutes from './routes/purchase.routes';
+import portfolioRoutes from './routes/portfolio.routes';
+import reportRoutes from './routes/report.routes';
+import configRoutes from './routes/config.routes';
 // import userRoutes from './routes/user.routes';
-// import saleRoutes from './routes/sale.routes';
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
@@ -90,8 +94,12 @@ app.use(`/api/${API_VERSION}/products`, productRoutes);
 app.use(`/api/${API_VERSION}/categories`, categoryRoutes);
 app.use(`/api/${API_VERSION}/clients`, clientRoutes);
 app.use(`/api/${API_VERSION}/suppliers`, supplierRoutes);
+app.use(`/api/${API_VERSION}/sales`, saleRoutes);
+app.use(`/api/${API_VERSION}/purchases`, purchaseRoutes);
+app.use(`/api/${API_VERSION}/portfolio`, portfolioRoutes);
+app.use(`/api/${API_VERSION}/reports`, reportRoutes);
+app.use(`/api/${API_VERSION}/config`, configRoutes);
 // app.use(`/api/${API_VERSION}/users`, userRoutes);
-// app.use(`/api/${API_VERSION}/sales`, saleRoutes);
 
 // Manejo de errores 404
 app.use((req: Request, res: Response) => {

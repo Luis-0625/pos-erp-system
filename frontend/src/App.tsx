@@ -1,126 +1,74 @@
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAppSelector } from './store/hooks';
 
-// Páginas (se crearán después)
-// import Login from './pages/auth/Login';
-// import Dashboard from './pages/Dashboard';
-// import Products from './pages/products/Products';
-// import Sales from './pages/sales/Sales';
-// import Clients from './pages/clients/Clients';
-// import Portfolio from './pages/portfolio/Portfolio';
+// Components
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import MainLayout from './components/layout/MainLayout';
 
-// Layout
-// import MainLayout from './components/layout/MainLayout';
-// import AuthLayout from './components/layout/AuthLayout';
+// Pages
+import Login from './pages/auth/Login';
+import Unauthorized from './pages/auth/Unauthorized';
+import NotFound from './pages/NotFound';
+import Dashboard from './pages/Dashboard';
+
+// Loading fallback component
+const LoadingFallback: React.FC = () => (
+  <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600"></div>
+      <p className="mt-4 text-gray-600">Cargando...</p>
+    </div>
+  </div>
+);
 
 function App() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   return (
     <div className="App">
-      <Routes>
-        {/* Rutas públicas */}
-        <Route
-          path="/login"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <div className="flex min-h-screen items-center justify-center bg-gray-50">
-                <div className="card w-full max-w-md">
-                  <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">
-                    POS ERP System
-                  </h1>
-                  <p className="text-center text-gray-600">
-                    Sistema de Punto de Venta y Gestión Empresarial
-                  </p>
-                  <div className="mt-8">
-                    <p className="text-center text-sm text-gray-500">
-                      Página de login en construcción...
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )
-          }
-        />
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={
+              isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+            }
+          />
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-        {/* Rutas protegidas */}
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? (
-              <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-                <div className="card w-full max-w-4xl">
-                  <h1 className="mb-4 text-3xl font-bold text-gray-900">
-                    Dashboard
-                  </h1>
-                  <p className="text-gray-600">
-                    Bienvenido al Sistema POS ERP
-                  </p>
-                  <div className="mt-8 grid gap-4 md:grid-cols-3">
-                    <div className="rounded-lg bg-primary-50 p-6">
-                      <h3 className="text-lg font-semibold text-primary-900">
-                        Ventas
-                      </h3>
-                      <p className="mt-2 text-sm text-primary-700">
-                        Módulo en construcción
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-success-50 p-6">
-                      <h3 className="text-lg font-semibold text-success-900">
-                        Inventario
-                      </h3>
-                      <p className="mt-2 text-sm text-success-700">
-                        Módulo en construcción
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-warning-50 p-6">
-                      <h3 className="text-lg font-semibold text-warning-900">
-                        Cartera
-                      </h3>
-                      <p className="mt-2 text-sm text-warning-700">
-                        Módulo en construcción
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+          {/* Protected Routes with MainLayout */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            {/* Dashboard */}
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
 
-        {/* Ruta por defecto */}
-        <Route
-          path="/"
-          element={
-            <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />
-          }
-        />
+            {/* Placeholder routes for future modules */}
+            {/* 
+            TODO: Implement in Phase 3
+            - Products module (list, create, edit, categories)
+            - Sales module (POS, list, details)
+            - Purchases module (list, create, details)
+            - Clients module (list, create, edit)
+            - Suppliers module (list, create, edit)
+            - Portfolio module (receivables, payables, payments)
+            - Reports module (sales, purchases, inventory, financial)
+            - Settings module (company, taxes, users, roles)
+            */}
+          </Route>
 
-        {/* Ruta 404 */}
-        <Route
-          path="*"
-          element={
-            <div className="flex min-h-screen items-center justify-center bg-gray-50">
-              <div className="card text-center">
-                <h1 className="text-6xl font-bold text-gray-900">404</h1>
-                <p className="mt-4 text-xl text-gray-600">
-                  Página no encontrada
-                </p>
-                <a
-                  href="/"
-                  className="btn btn-primary mt-8 inline-block"
-                >
-                  Volver al inicio
-                </a>
-              </div>
-            </div>
-          }
-        />
-      </Routes>
+          {/* 404 Not Found */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
