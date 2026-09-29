@@ -4,6 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Variables para solucionar el error de PostCSS
+        border: '#e2e8f0',
+        input: '#e2e8f0',
+        ring: '#0ea5e9',
+        background: '#ffffff',
+        foreground: '#0f172a',
+
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',

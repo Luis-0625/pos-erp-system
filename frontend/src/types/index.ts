@@ -117,12 +117,24 @@ export interface Sale {
   discount: number;
   tax: number;
   total: number;
-  paymentMethod: PaymentMethod;
+  paidAmount: number;
+  remainingBalance: number;
+  payments: SalePayment[];
   paymentStatus: PaymentStatus;
   notes?: string;
   items: SaleItem[];
+  accountReceivableId?: number;
+  accountReceivable?: AccountReceivable;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SalePayment {
+  id?: number;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  reference?: string;
+  notes?: string;
 }
 
 export interface SaleItem {

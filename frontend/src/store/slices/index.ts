@@ -47,7 +47,10 @@ export {
   updateCartItemDiscount,
   clearCart,
   setSelectedClient,
-  setPaymentMethod,
+  addPayment,
+  removePayment,
+  updatePayment,
+  clearPayments,
   setCartDiscount,
   calculateCartTotals,
 } from './saleSlice';

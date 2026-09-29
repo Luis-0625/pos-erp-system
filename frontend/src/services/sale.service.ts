@@ -1,5 +1,5 @@
 import apiService from './api.service';
-import { Sale, SaleItem, PaginatedResponse, QueryFilters, ApiResponse, PaymentStatus } from '../types';
+import { Sale, SaleItem, SalePayment, PaginatedResponse, QueryFilters, ApiResponse, PaymentStatus } from '../types';
 
 /**
  * Sale Service
@@ -52,12 +52,13 @@ class SaleService {
   }
 
   /**
-   * Crear una nueva venta
+   * Crear una nueva venta con soporte para pagos mixtos
    */
   async createSale(saleData: {
     clientId?: number;
     items: Partial<SaleItem>[];
-    paymentMethod: string;
+    payments: SalePayment[];
+    paymentStatus?: PaymentStatus;
     notes?: string;
     discount?: number;
   }): Promise<Sale> {

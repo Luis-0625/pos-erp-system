@@ -14,11 +14,11 @@ const Unauthorized = lazy(() => import('../pages/auth/Unauthorized'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Productos
-const ProductList = lazy(() => import('../pages/products/ProductList'));
-const ProductCreate = lazy(() => import('../pages/products/ProductCreate'));
-const ProductEdit = lazy(() => import('../pages/products/ProductEdit'));
-const ProductDetail = lazy(() => import('../pages/products/ProductDetail'));
-const CategoryList = lazy(() => import('../pages/products/CategoryList'));
+const ProductList = lazy(() => import('../pages/Products/ProductList'));
+const ProductCreate = lazy(() => import('../pages/Products/ProductCreate'));
+const ProductEdit = lazy(() => import('../pages/Products/ProductEdit'));
+const ProductDetail = lazy(() => import('../pages/Products/ProductDetail'));
+const CategoryList = lazy(() => import('../pages/Products/CategoryList'));
 
 // Ventas
 const SalesList = lazy(() => import('../pages/sales/SalesList'));

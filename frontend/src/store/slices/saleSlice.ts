@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import saleService from '../../services/sale.service';
-import { Sale, SaleItem, PaginatedResponse, PaymentMethod, PaymentStatus } from '../../types';
+import { Sale, SaleItem, SalePayment, PaginatedResponse, PaymentStatus } from '../../types';
 
 interface CartItem extends Omit<SaleItem, 'saleId'> {
   productName: string;
@@ -17,7 +17,7 @@ interface SaleState {
   cartTax: number;
   cartDiscount: number;
   selectedClient: number | null;
-  paymentMethod: PaymentMethod;
+  payments: SalePayment[];
   loading: boolean;
   error: string | null;
   pagination: {
@@ -53,7 +53,7 @@ const initialState: SaleState = {
   cartTax: 0,
   cartDiscount: 0,
   selectedClient: null,
-  paymentMethod: PaymentMethod.CASH,
+  payments: [],
   loading: false,
   error: null,
   pagination: {
@@ -107,7 +107,7 @@ export const createSale = createAsyncThunk(
   async (saleData: {
     clientId?: number;
     items: Array<{ productId: number; quantity: number; unitPrice: number; discount?: number }>;
-    paymentMethod: PaymentMethod;
+    payments: SalePayment[];
     paymentStatus?: PaymentStatus;
     discount?: number;
     notes?: string;
@@ -282,15 +282,27 @@ const saleSlice = createSlice({
       state.cartTax = 0;
       state.cartDiscount = 0;
       state.selectedClient = null;
-      state.paymentMethod = PaymentMethod.CASH;
+      state.payments = [];
     },
     
     setSelectedClient: (state, action: PayloadAction<number | null>) => {
       state.selectedClient = action.payload;
     },
     
-    setPaymentMethod: (state, action: PayloadAction<PaymentMethod>) => {
-      state.paymentMethod = action.payload;
+    addPayment: (state, action: PayloadAction<SalePayment>) => {
+      state.payments.push(action.payload);
+    },
+    
+    removePayment: (state, action: PayloadAction<number>) => {
+      state.payments.splice(action.payload, 1);
+    },
+    
+    updatePayment: (state, action: PayloadAction<{ index: number; payment: SalePayment }>) => {
+      state.payments[action.payload.index] = action.payload.payment;
+    },
+    
+    clearPayments: (state) => {
+      state.payments = [];
     },
     
     setCartDiscount: (state, action: PayloadAction<number>) => {
@@ -521,7 +533,10 @@ export const {
   updateCartItemDiscount,
   clearCart,
   setSelectedClient,
-  setPaymentMethod,
+  addPayment,
+  removePayment,
+  updatePayment,
+  clearPayments,
   setCartDiscount,
   calculateCartTotals,
   clearCurrentSale,
